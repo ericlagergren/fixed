@@ -39,6 +39,11 @@ func (x Uint96) uint128() Uint128 {
 	return Uint128{x.u0, uint64(x.u1)}
 }
 
+//lint:ignore U1000 used by [Uint].
+func (x Uint96) uint8() uint8 {
+	return uint8(x.u0)
+}
+
 // digits returns the number of decimal digits required to
 // represent x.
 func (x Uint96) digits() int {
@@ -64,6 +69,11 @@ func (x Uint96) words() []big.Word {
 		big.Word(x.u0),
 		big.Word(x.u1),
 	}
+}
+
+// Size returns the width of the integer in bits.
+func (Uint96) Size() int {
+	return 96
 }
 
 // BitLen returns the number of bits required to represent x.
@@ -119,6 +129,13 @@ func (x Uint96) cmp64(y uint64) int {
 	}
 }
 
+// Equal reports whether x == y.
+//
+// In general, prefer the == operator to using this method.
+func (x Uint96) Equal(y Uint96) bool {
+	return x == y
+}
+
 // And returns x&y.
 func (x Uint96) And(y Uint96) Uint96 {
 	return Uint96{x.u0 & y.u0, x.u1 & y.u1}
@@ -127,6 +144,13 @@ func (x Uint96) And(y Uint96) Uint96 {
 // Or returns x|y.
 func (x Uint96) Or(y Uint96) Uint96 {
 	return Uint96{x.u0 | y.u0, x.u1 | y.u1}
+}
+
+// orLsh64 returns x | y<<s.
+//
+//lint:ignore U1000 used by [Uint].
+func (x Uint96) orLsh64(y uint64, s uint) Uint96 {
+	return x.Or(Uint96{u0: y}.Lsh(s))
 }
 
 // Xor returns x^y.
