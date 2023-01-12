@@ -278,8 +278,8 @@ func TestUint128String(t *testing.T) {
 			t.Fatalf("expected %q, got %q", want, got)
 		}
 	}
-	test(Uint128{})  // min
-	test(maxUint128) // max
+	test(Uint128{})       // min
+	test(Uint128{}.max()) // max
 	for i := 0; i < 100_000; i++ {
 		test(randUint128())
 	}

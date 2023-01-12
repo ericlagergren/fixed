@@ -45,6 +45,10 @@ func (x Uint256) high() Uint128 {
 	return Uint128{x.u2, x.u3}
 }
 
+func (x Uint256) uint8() uint8 {
+	return uint8(x.u0)
+}
+
 // Bytes returns x encoded as a little-endian integer.
 func (x Uint256) Bytes() []byte {
 	b := make([]byte, 32)
@@ -55,7 +59,7 @@ func (x Uint256) Bytes() []byte {
 	return b
 }
 
-// SetBytes sets x to the encoded little-endian integer.
+// SetBytes sets x to the encoded little-endian integer b.
 func (x *Uint256) SetBytes(b []byte) error {
 	if len(b) != 32 {
 		return fmt.Errorf("fixed: invalid length: %d", len(b))
@@ -65,6 +69,11 @@ func (x *Uint256) SetBytes(b []byte) error {
 	x.u2 = binary.LittleEndian.Uint64(b[16:])
 	x.u3 = binary.LittleEndian.Uint64(b[24:])
 	return nil
+}
+
+// Size returns the width of the integer in bits.
+func (Uint256) Size() int {
+	return 256
 }
 
 // BitLen returns the number of bits required to represent x.
@@ -123,6 +132,13 @@ func (x Uint256) cmp64(y uint64) int {
 	return cmp(x.u0, y)
 }
 
+// Equal reports whether x == y.
+//
+// In general, prefer the == operator to using this method.
+func (x Uint256) Equal(y Uint256) bool {
+	return x == y
+}
+
 // And returns x&y.
 func (x Uint256) And(y Uint256) Uint256 {
 	return Uint256{
@@ -141,6 +157,11 @@ func (x Uint256) Or(y Uint256) Uint256 {
 		x.u2 | y.u2,
 		x.u3 | y.u3,
 	}
+}
+
+// orLsh64 returns x | y<<s.
+func (x Uint256) orLsh64(y uint64, s uint) Uint256 {
+	return x.Or(Uint256{u0: y}.Lsh(s))
 }
 
 // Xor returns x^y.

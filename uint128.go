@@ -1,16 +1,12 @@
 package fixed
 
 import (
+	"encoding/binary"
 	"fmt"
 	"math"
 	"math/bits"
 	"strconv"
 )
-
-var maxUint128 = Uint128{
-	math.MaxUint64,
-	math.MaxUint64,
-}
 
 // Uint128 is an unsigned, 128-bit integer.
 //
@@ -39,6 +35,34 @@ func (x Uint128) uint96() Uint96 {
 
 func (x Uint128) uint192() Uint192 {
 	return Uint192{x.u0, x.u1, 0}
+}
+
+//lint:ignore U1000 used by [Uint].
+func (x Uint128) uint8() uint8 {
+	return byte(x.u0)
+}
+
+// Bytes returns x encoded as a little-endian integer.
+func (x Uint128) Bytes() []byte {
+	b := make([]byte, 16)
+	binary.LittleEndian.PutUint64(b[0:], x.u0)
+	binary.LittleEndian.PutUint64(b[8:], x.u1)
+	return b
+}
+
+// SetBytes sets x to the encoded little-endian integer b.
+func (x *Uint128) SetBytes(b []byte) error {
+	if len(b) != 16 {
+		return fmt.Errorf("fixed: invalid length: %d", len(b))
+	}
+	x.u0 = binary.LittleEndian.Uint64(b[0:])
+	x.u1 = binary.LittleEndian.Uint64(b[8:])
+	return nil
+}
+
+// Size returns the width of the integer in bits.
+func (Uint128) Size() int {
+	return 128
 }
 
 // BitLen returns the number of bits required to represent x.
@@ -94,6 +118,13 @@ func (x Uint128) cmp64(y uint64) int {
 	}
 }
 
+// Equal reports whether x == y.
+//
+// In general, prefer the == operator to using this method.
+func (x Uint128) Equal(y Uint128) bool {
+	return x == y
+}
+
 // And returns x&y.
 func (x Uint128) And(y Uint128) Uint128 {
 	return Uint128{x.u0 & y.u0, x.u1 & y.u1}
@@ -102,6 +133,13 @@ func (x Uint128) And(y Uint128) Uint128 {
 // Or returns x|y.
 func (x Uint128) Or(y Uint128) Uint128 {
 	return Uint128{x.u0 | y.u0, x.u1 | y.u1}
+}
+
+// orLsh64 returns x | y<<s.
+//
+//lint:ignore U1000 used by [Uint].
+func (x Uint128) orLsh64(y uint64, s uint) Uint128 {
+	return x.Or(Uint128{u0: y}.Lsh(s))
 }
 
 // Xor returns x^y.
@@ -286,8 +324,8 @@ func (x Uint128) quoRem64(y uint64) (q Uint128, r uint64) {
 
 // div128 returns (q, r) such that
 //
-//  q = (hi, lo)/y
-//  r = (hi, lo) - y*q
+//	q = (hi, lo)/y
+//	r = (hi, lo) - y*q
 func div128(hi, lo, y Uint128) (q, r Uint128) {
 	if y.IsZero() {
 		panic("integer divide by zero")
