@@ -1,0 +1,4 @@
+github.com/ericlagergren/testutil v0.0.0-20220814025904-404663215e88 h1:xmPk2YUwB47PIPbYTS6jPJ5zCaqS1LjycaMLDy5v7Z4=
+github.com/ericlagergren/testutil v0.0.0-20220814025904-404663215e88/go.mod h1:E4aJHbNMb6zjyVd1Mrpf3FIJ6kAtnVUq2yl0T6DHZ/I=
+golang.org/x/exp v0.0.0-20220916125017-b168a2c6b86b h1:SCE/18RnFsLrjydh/R/s5EVvHoZprqEQUuoxK8q2Pc4=
+golang.org/x/exp v0.0.0-20220916125017-b168a2c6b86b/go.mod h1:cyybsKvd6eL0RnXn6p/Grxp8F5bW7iYuBgsNCOHpMYE=
