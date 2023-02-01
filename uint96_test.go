@@ -29,6 +29,21 @@ func (x Uint96) big() *big.Int {
 	return &v
 }
 
+func TestUint96Bytes(t *testing.T) {
+	for i := 0; i < 250_000; i++ {
+		x := randUint96()
+		var b [12]byte
+		x.Bytes(&b)
+		var y Uint96
+		if err := y.SetBytes(b[:]); err != nil {
+			t.Fatal(err)
+		}
+		if x != y {
+			t.Fatalf("got %x, expected %x", y, x)
+		}
+	}
+}
+
 func TestUint96Digits(t *testing.T) {
 	for i := 0; i < 100_000; i++ {
 		x := randUint96()

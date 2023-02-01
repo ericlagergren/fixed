@@ -1,6 +1,7 @@
 package fixed
 
 import (
+	"encoding/binary"
 	"fmt"
 	"math"
 	"math/big"
@@ -69,6 +70,22 @@ func (x Uint96) words() []big.Word {
 		big.Word(x.u0),
 		big.Word(x.u1),
 	}
+}
+
+// Bytes encodes x as a little-endian integer.
+func (x Uint96) Bytes(b *[12]byte) {
+	binary.LittleEndian.PutUint64(b[0:], x.u0)
+	binary.LittleEndian.PutUint32(b[8:], x.u1)
+}
+
+// SetBytes sets x to the encoded little-endian integer b.
+func (x *Uint96) SetBytes(b []byte) error {
+	if len(b) != 12 {
+		return fmt.Errorf("fixed: invalid length: %d", len(b))
+	}
+	x.u0 = binary.LittleEndian.Uint64(b[0:])
+	x.u1 = binary.LittleEndian.Uint32(b[8:])
+	return nil
 }
 
 // Size returns the width of the integer in bits.

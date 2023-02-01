@@ -209,15 +209,14 @@ func (x {:name}) uint8() uint8 {
 	return uint8(x.u0)
 }
 
-// Bytes returns x encoded as a little-endian integer.
-func (x {:name}) Bytes() []byte {
-`)
-	p("b := make([]byte, %d)\n", (bits+7)/8)
+// Bytes encodes x as a little-endian integer.
+func (x {:name}) Bytes(b *[%d]byte) {
+`, (bits+7)/8)
 	for i := 0; i < bits/64; i++ {
 		p("binary.LittleEndian.PutUint64(b[%d:], x.u%d)\n",
 			i*8, i)
 	}
-	p(`return b
+	p(`
 }
 
 // SetBytes sets x to the encoded little-endian integer b.
@@ -977,6 +976,22 @@ func (x {:name}) big() *big.Int {
 	return &v
 }
 
+func Test{:name}Bytes(t *testing.T) {
+	for i := 0; i < 250_000; i++ {
+		x := rand{:name}()
+		var b [%d]byte
+		x.Bytes(&b)
+		var y {:name}
+		if err := y.SetBytes(b[:]); err != nil {
+			t.Fatal(err)
+		}
+		if x != y {
+			t.Fatalf("got %%x, expected %%x", y, x)
+		}
+	}
+}`, (bits+7)/8)
+
+	p(`
 func Test{:name}BitLen(t *testing.T) {
 	for i := 0; i < 250_000; i++ {
 		x := rand{:name}()

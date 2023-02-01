@@ -42,12 +42,10 @@ func (x Uint128) uint8() uint8 {
 	return byte(x.u0)
 }
 
-// Bytes returns x encoded as a little-endian integer.
-func (x Uint128) Bytes() []byte {
-	b := make([]byte, 16)
+// Bytes encodes x as a little-endian integer.
+func (x Uint128) Bytes(b *[16]byte) {
 	binary.LittleEndian.PutUint64(b[0:], x.u0)
 	binary.LittleEndian.PutUint64(b[8:], x.u1)
-	return b
 }
 
 // SetBytes sets x to the encoded little-endian integer b.
