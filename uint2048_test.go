@@ -224,6 +224,20 @@ func (x Uint2048) big() *big.Int {
 	return &v
 }
 
+func TestUint2048Bytes(t *testing.T) {
+	for i := 0; i < 250_000; i++ {
+		x := randUint2048()
+		var b [256]byte
+		x.Bytes(&b)
+		var y Uint2048
+		if err := y.SetBytes(b[:]); err != nil {
+			t.Fatal(err)
+		}
+		if x != y {
+			t.Fatalf("got %x, expected %x", y, x)
+		}
+	}
+}
 func TestUint2048BitLen(t *testing.T) {
 	for i := 0; i < 250_000; i++ {
 		x := randUint2048()

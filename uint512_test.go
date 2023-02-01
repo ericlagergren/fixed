@@ -80,6 +80,20 @@ func (x Uint512) big() *big.Int {
 	return &v
 }
 
+func TestUint512Bytes(t *testing.T) {
+	for i := 0; i < 250_000; i++ {
+		x := randUint512()
+		var b [64]byte
+		x.Bytes(&b)
+		var y Uint512
+		if err := y.SetBytes(b[:]); err != nil {
+			t.Fatal(err)
+		}
+		if x != y {
+			t.Fatalf("got %x, expected %x", y, x)
+		}
+	}
+}
 func TestUint512BitLen(t *testing.T) {
 	for i := 0; i < 250_000; i++ {
 		x := randUint512()
