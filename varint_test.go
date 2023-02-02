@@ -27,6 +27,9 @@ func testUvarint[T Uint[T]](t *testing.T) {
 		for j := 0; j < max; j++ {
 			want := one.Lsh(uint(j) * 7)
 			b = AppendUvarint(b[:0], want)
+			if got := VarintLen(want); got != len(b) {
+				t.Fatalf("got %d, expected %d", got, len(b))
+			}
 			got, n := Uvarint[T](b)
 			if n <= 0 {
 				t.Fatalf("")
