@@ -16,6 +16,16 @@ func AppendUvarint[T Uint[T]](b []byte, v T) []byte {
 	return append(b, v.uint8())
 }
 
+// VarintLen returns the number of bytes required to encode x.
+func VarintLen[T Uint[T]](v T) int {
+	var n int
+	for v.cmp64(0x80) >= 0 {
+		n++
+		v = v.Rsh(7)
+	}
+	return n + 1
+}
+
 // Uvarint parses an unsigned varint from b and returns that
 // value and the number of bytes read.
 func Uvarint[T Uint[T]](b []byte) (T, int) {
