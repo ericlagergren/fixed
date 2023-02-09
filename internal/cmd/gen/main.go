@@ -39,12 +39,14 @@ func main1(s string) error {
 		v.fn(&b, bits)
 		src, err := format.Source(b.Bytes())
 		if err != nil {
-			for i, v := range bytes.Split(b.Bytes(), []byte("\n")) {
-				fmt.Fprintf(os.Stderr, "%d: %s\n", i+1, v)
-			}
-			return err
+			// Use original source to make it easier to debug.
+			src = b.Bytes()
 		}
-		err = os.WriteFile(v.path, src, 0644)
+		writeErr := os.WriteFile(v.path, src, 0644)
+		// Prefer write errors to code formatting errors.
+		if writeErr != nil {
+			return writeErr
+		}
 		if err != nil {
 			return err
 		}
