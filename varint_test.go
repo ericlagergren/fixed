@@ -5,6 +5,7 @@ import (
 	"testing"
 
 	gcmp "github.com/google/go-cmp/cmp"
+	"golang.org/x/exp/rand"
 )
 
 func TestUvarint(t *testing.T) {
@@ -22,17 +23,17 @@ func testUvarint[T Uint[T]](t *testing.T) {
 		max := MaxVarintLen[T]()
 		b := make([]byte, max)
 
-		var one T
-		one.addCheck64(1)
-		for j := 0; j < max; j++ {
-			want := one.Lsh(uint(j) * 7)
+		var want T
+		for j := 0; j < 10_000; j++ {
+			want = want.add64(rand.Uint64())
+			want = want.mul64(rand.Uint64())
 			b = AppendUvarint(b[:0], want)
 			if got := VarintLen(want); got != len(b) {
 				t.Fatalf("got %d, expected %d", got, len(b))
 			}
 			got, n := Uvarint[T](b)
-			if n <= 0 {
-				t.Fatalf("")
+			if n != len(b) {
+				t.Fatalf("got %d, expected %d", n, len(b))
 			}
 			if !gcmp.Equal(want, got) {
 				t.Fatalf("%s", gcmp.Diff(want, got))
@@ -55,15 +56,16 @@ func benchmarkAppendUvarint[T Uint[T]](b *testing.B) {
 	b.Run(fmt.Sprintf("%T", *new(T)), func(b *testing.B) {
 		max := MaxVarintLen[T]()
 		buf := make([]byte, max)
+		var want T
+		for i := 0; i < 64; i++ {
+			want = want.add64(rand.Uint64())
+			want = want.mul64(rand.Uint64())
+		}
 		b.SetBytes(int64(len(buf)))
 		b.ResetTimer()
 
-		var one T
-		one.addCheck64(1)
 		for i := 0; i < b.N; i++ {
-			for j := 0; j < max; j++ {
-				buf = AppendUvarint(buf[:0], one.Lsh(uint(j)*7))
-			}
+			buf = AppendUvarint(buf[:0], want)
 		}
 	})
 }

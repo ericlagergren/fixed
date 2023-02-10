@@ -51,6 +51,8 @@ type Uint[T any] interface {
 	uint8() uint8
 	mulCheck64(uint64) (T, bool)
 	addCheck64(uint64) (T, uint64)
+	add64(uint64) T
+	mul64(uint64) T
 	cmp64(uint64) int
 	max() T
 }
