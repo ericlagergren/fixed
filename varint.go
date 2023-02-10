@@ -10,7 +10,7 @@ func MaxVarintLen[T Uint[T]]() int {
 // and returns the resulting slice.
 func AppendUvarint[T Uint[T]](b []byte, v T) []byte {
 	for v.cmp64(0x80) >= 0 {
-		b = append(b, v.uint8())
+		b = append(b, v.uint8()|0x80)
 		v = v.Rsh(7)
 	}
 	return append(b, v.uint8())
