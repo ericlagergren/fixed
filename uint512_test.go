@@ -373,14 +373,14 @@ func TestUint512Mul64(t *testing.T) {
 }
 
 func TestUint512Exp(t *testing.T) {
-	x := U512(1)
-	ten := U512(10)
+	x := U512From64(1)
+	ten := U512From64(10)
 	for i := 1; ; i++ {
 		want, ok := x.mulCheck64(10)
 		if !ok {
 			break
 		}
-		got := ten.Exp(U512(uint64(i)), U512(0))
+		got := ten.Exp(U512From64(uint64(i)), U512From64(0))
 		if got != want {
 			t.Fatalf("#%d: expected %q, got %q", i, want, got)
 		}
@@ -393,7 +393,7 @@ func TestUint512QuoRem(t *testing.T) {
 		x := randUint512()
 		y := randUint512()
 		if y.IsZero() {
-			y = U512(1)
+			y = U512From64(1)
 		}
 
 		q, r := x.QuoRem(y)
@@ -419,7 +419,7 @@ func TestUint512QuoRemHalf(t *testing.T) {
 		x := randUint512()
 		y := randUint256()
 		if y.IsZero() {
-			y = U256(1)
+			y = U256From64(1)
 		}
 
 		q, r := x.quoRem256(y)
@@ -544,12 +544,12 @@ func BenchmarkUint512Mul(b *testing.B) {
 
 func BenchmarkUint512QuoRem(b *testing.B) {
 	for i := 0; i < b.N; i++ {
-		sink.Uint512, sink.Uint512 = U512(uint64(i + 2)).QuoRem(U512(uint64(i + 1)))
+		sink.Uint512, sink.Uint512 = U512From64(uint64(i + 2)).QuoRem(U512From64(uint64(i + 1)))
 	}
 }
 
 func BenchmarkUint512QuoRem64(b *testing.B) {
 	for i := 0; i < b.N; i++ {
-		sink.Uint512, sink.uint64 = U512(uint64(i + 2)).quoRem64(uint64(i + 1))
+		sink.Uint512, sink.uint64 = U512From64(uint64(i + 2)).quoRem64(uint64(i + 1))
 	}
 }

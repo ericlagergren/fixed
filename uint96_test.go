@@ -229,7 +229,7 @@ func TestUint96QuoRem(t *testing.T) {
 		x := randUint96()
 		y := randUint96()
 		if y == (Uint96{}) {
-			y = U96(1)
+			y = U96From64(1)
 		}
 
 		q, r := x.QuoRem(y)
@@ -342,6 +342,6 @@ func (x Uint96) quoRem64Reciprocal(y uint64) (q Uint96, r uint64) {
 
 func benchmarkUint96QuoRem64(b *testing.B, fn func(x Uint96, y uint64) (q Uint96, r uint64)) {
 	for i := 0; i < b.N; i++ {
-		sink.Uint96, sink.uint64 = fn(U96(uint64(i+2)), uint64(i+1))
+		sink.Uint96, sink.uint64 = fn(U96From64(uint64(i+2)), uint64(i+1))
 	}
 }

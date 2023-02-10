@@ -19,8 +19,22 @@ type Uint1024 struct {
 
 var _ Uint[Uint1024] = Uint1024{}
 
-// U1024 returns x as a Uint1024.
-func U1024(x uint64) Uint1024 {
+// U1024 constructs a [Uint1024].
+//
+// The inputs are in ascending (low to high) order. For example,
+// a uint64 x can be converted to a [Uint1024], with
+//
+//	U1024(x, 0, 0, ...)
+//
+// or more simply
+//
+//	U1024From64(x)
+func U1024(u0, u1, u2, u3, u4, u5, u6, u7, u8, u9, u10, u11, u12, u13, u14, u15 uint64) Uint1024 {
+	return Uint1024{u0, u1, u2, u3, u4, u5, u6, u7, u8, u9, u10, u11, u12, u13, u14, u15}
+}
+
+// U1024From64 constructs a [Uint1024] from a uint64.
+func U1024From64(x uint64) Uint1024 {
 	return Uint1024{u0: x}
 }
 
@@ -1332,12 +1346,12 @@ func (x Uint1024) Exp(y, m Uint1024) Uint1024 {
 
 	// x^0 = 1
 	if y.IsZero() {
-		return U1024(1)
+		return U1024From64(1)
 	}
 
 	// x^1 mod m == x mod m
 	mod := !m.IsZero()
-	if y == U1024(1) && mod {
+	if y == U1024From64(1) && mod {
 		_, r := x.QuoRem(m)
 		return r
 	}
@@ -1394,7 +1408,7 @@ func (x Uint1024) mulPow10(n uint) (Uint1024, bool) {
 	case n == 0:
 		return x, true
 	default:
-		return x.MulCheck(U1024(10).Exp(U1024(uint64(n)), U1024(0)))
+		return x.MulCheck(U1024From64(10).Exp(U1024From64(uint64(n)), U1024From64(0)))
 	}
 }
 
@@ -1407,7 +1421,7 @@ func pow10Uint1024(n uint) Uint1024 {
 	pow10tabUint1024.once.Do(func() {
 		tab := make([]Uint1024, 2+309)
 		tab[0] = Uint1024{}
-		tab[1] = U1024(1)
+		tab[1] = U1024From64(1)
 		for i := 2; i < len(tab); i++ {
 			tab[i] = tab[i-1].mul64(10)
 		}

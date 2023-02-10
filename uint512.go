@@ -19,8 +19,22 @@ type Uint512 struct {
 
 var _ Uint[Uint512] = Uint512{}
 
-// U512 returns x as a Uint512.
-func U512(x uint64) Uint512 {
+// U512 constructs a [Uint512].
+//
+// The inputs are in ascending (low to high) order. For example,
+// a uint64 x can be converted to a [Uint512], with
+//
+//	U512(x, 0, 0, ...)
+//
+// or more simply
+//
+//	U512From64(x)
+func U512(u0, u1, u2, u3, u4, u5, u6, u7 uint64) Uint512 {
+	return Uint512{u0, u1, u2, u3, u4, u5, u6, u7}
+}
+
+// U512From64 constructs a [Uint512] from a uint64.
+func U512From64(x uint64) Uint512 {
 	return Uint512{u0: x}
 }
 
@@ -645,12 +659,12 @@ func (x Uint512) Exp(y, m Uint512) Uint512 {
 
 	// x^0 = 1
 	if y.IsZero() {
-		return U512(1)
+		return U512From64(1)
 	}
 
 	// x^1 mod m == x mod m
 	mod := !m.IsZero()
-	if y == U512(1) && mod {
+	if y == U512From64(1) && mod {
 		_, r := x.QuoRem(m)
 		return r
 	}
@@ -707,7 +721,7 @@ func (x Uint512) mulPow10(n uint) (Uint512, bool) {
 	case n == 0:
 		return x, true
 	default:
-		return x.MulCheck(U512(10).Exp(U512(uint64(n)), U512(0)))
+		return x.MulCheck(U512From64(10).Exp(U512From64(uint64(n)), U512From64(0)))
 	}
 }
 
@@ -720,7 +734,7 @@ func pow10Uint512(n uint) Uint512 {
 	pow10tabUint512.once.Do(func() {
 		tab := make([]Uint512, 2+155)
 		tab[0] = Uint512{}
-		tab[1] = U512(1)
+		tab[1] = U512From64(1)
 		for i := 2; i < len(tab); i++ {
 			tab[i] = tab[i-1].mul64(10)
 		}

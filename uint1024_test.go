@@ -421,14 +421,14 @@ func TestUint1024Mul64(t *testing.T) {
 }
 
 func TestUint1024Exp(t *testing.T) {
-	x := U1024(1)
-	ten := U1024(10)
+	x := U1024From64(1)
+	ten := U1024From64(10)
 	for i := 1; ; i++ {
 		want, ok := x.mulCheck64(10)
 		if !ok {
 			break
 		}
-		got := ten.Exp(U1024(uint64(i)), U1024(0))
+		got := ten.Exp(U1024From64(uint64(i)), U1024From64(0))
 		if got != want {
 			t.Fatalf("#%d: expected %q, got %q", i, want, got)
 		}
@@ -441,7 +441,7 @@ func TestUint1024QuoRem(t *testing.T) {
 		x := randUint1024()
 		y := randUint1024()
 		if y.IsZero() {
-			y = U1024(1)
+			y = U1024From64(1)
 		}
 
 		q, r := x.QuoRem(y)
@@ -467,7 +467,7 @@ func TestUint1024QuoRemHalf(t *testing.T) {
 		x := randUint1024()
 		y := randUint512()
 		if y.IsZero() {
-			y = U512(1)
+			y = U512From64(1)
 		}
 
 		q, r := x.quoRem512(y)
@@ -592,12 +592,12 @@ func BenchmarkUint1024Mul(b *testing.B) {
 
 func BenchmarkUint1024QuoRem(b *testing.B) {
 	for i := 0; i < b.N; i++ {
-		sink.Uint1024, sink.Uint1024 = U1024(uint64(i + 2)).QuoRem(U1024(uint64(i + 1)))
+		sink.Uint1024, sink.Uint1024 = U1024From64(uint64(i + 2)).QuoRem(U1024From64(uint64(i + 1)))
 	}
 }
 
 func BenchmarkUint1024QuoRem64(b *testing.B) {
 	for i := 0; i < b.N; i++ {
-		sink.Uint1024, sink.uint64 = U1024(uint64(i + 2)).quoRem64(uint64(i + 1))
+		sink.Uint1024, sink.uint64 = U1024From64(uint64(i + 2)).quoRem64(uint64(i + 1))
 	}
 }

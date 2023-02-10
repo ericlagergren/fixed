@@ -222,7 +222,7 @@ func TestUint192QuoRem(t *testing.T) {
 		x := randUint192()
 		y := randUint192()
 		if y == (Uint192{}) {
-			y = U192(1)
+			y = U192From64(1)
 		}
 
 		q, r := x.QuoRem(y)
@@ -248,7 +248,7 @@ func TestUint192QuoRemHalf(t *testing.T) {
 		x := randUint192()
 		y := randUint96()
 		if y.IsZero() {
-			y = U96(1)
+			y = U96From64(1)
 		}
 
 		q, r := x.quoRem96(y)
@@ -379,6 +379,6 @@ func BenchmarkUint192Mul(b *testing.B) {
 
 func BenchmarkUint192QuoRem64(b *testing.B) {
 	for i := 0; i < b.N; i++ {
-		sink.Uint192, sink.uint64 = U192(uint64(i + 2)).quoRem64(uint64(i + 1))
+		sink.Uint192, sink.uint64 = U192From64(uint64(i + 2)).quoRem64(uint64(i + 1))
 	}
 }
