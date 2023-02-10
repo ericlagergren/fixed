@@ -152,8 +152,34 @@ type {:name} struct {
 
 var _ Uint[{:name}] = {:name}{}
 
-// U{:bits} returns x as a {:name}.
-func U{:bits}(x uint64) {:name} {
+// U{:bits} constructs a [{:name}].
+//
+// The inputs are in ascending (low to high) order. For example,
+// a uint64 x can be converted to a [{:name}], with
+//    U{:bits}(x, 0, 0, ...)
+// or more simply
+//    U{:bits}From64(x)
+func U{:bits}(`)
+	for i := 0; i < bits/64; i++ {
+		if i > 0 {
+			p(", ")
+		}
+		p("u%d ", i)
+	}
+
+	p(`uint64) {:name} {
+	return {:name}{`)
+	for i := 0; i < bits/64; i++ {
+		if i > 0 {
+			p(",")
+		}
+		p("u%d", i)
+	}
+	p(`}
+}
+
+// U{:bits}From64 constructs a [{:name}] from a uint64.
+func U{:bits}From64(x uint64) {:name} {
 	return {:name}{u0: x}
 }
 
@@ -602,12 +628,12 @@ func (x {:name}) Exp(y, m {:name}) {:name} {
 
 	// x^0 = 1
 	if y.IsZero() {
-		return U{:bits}(1)
+		return U{:bits}From64(1)
 	}
 
 	// x^1 mod m == x mod m
 	mod := !m.IsZero()
-	if y == U{:bits}(1) && mod {
+	if y == U{:bits}From64(1) && mod {
 		_, r := x.QuoRem(m)
 		return r
 	}
@@ -676,7 +702,7 @@ func (x {:name}) mulPow10(n uint) ({:name}, bool) {
 	} else {
 		p(`
 	default:
-		return x.MulCheck(U{:bits}(10).Exp(U{:bits}(uint64(n)), U{:bits}(0)))`)
+		return x.MulCheck(U{:bits}From64(10).Exp(U{:bits}From64(uint64(n)), U{:bits}From64(0)))`)
 	}
 	p(`
 	}
@@ -691,7 +717,7 @@ func pow10{:name}(n uint) {:name} {
 	pow10tab{:name}.once.Do(func() {
 		tab := make([]{:name}, 2 + %d)
 		tab[0] = {:name}{}
-		tab[1] = U{:bits}(1)
+		tab[1] = U{:bits}From64(1)
 		for i := 2; i < len(tab); i++ {
 			tab[i] = tab[i-1].mul64(10)
 		}
@@ -1271,12 +1297,12 @@ func Test{:name}Mul64(t *testing.T) {
 }
 
 func Test{:name}Exp(t* testing.T) {
-	x := U{:bits}(1)
-	ten := U{:bits}(10)
+	x := U{:bits}From64(1)
+	ten := U{:bits}From64(10)
 	for i := 1;; i++ {
 		want, ok := x.mulCheck64(10)
 		if !ok { break }
-		got := ten.Exp(U{:bits}(uint64(i)), U{:bits}(0))
+		got := ten.Exp(U{:bits}From64(uint64(i)), U{:bits}From64(0))
 		if got != want {
 			t.Fatalf("#%%d: expected %%q, got %%q", i, want, got)
 		}
@@ -1289,7 +1315,7 @@ func Test{:name}QuoRem(t *testing.T) {
 		x := rand{:name}()
 		y := rand{:name}()
 		if y.IsZero() {
-			y = U{:bits}(1)
+			y = U{:bits}From64(1)
 		}
 
 		q, r := x.QuoRem(y)
@@ -1315,7 +1341,7 @@ func Test{:name}QuoRemHalf(t *testing.T) {
 		x := rand{:name}()
 		y := randUint{:halfBits}()
 		if y.IsZero() {
-			y = U{:halfBits}(1)
+			y = U{:halfBits}From64(1)
 		}
 
 		q, r := x.quoRem{:halfBits}(y)
@@ -1440,13 +1466,13 @@ func Benchmark{:name}Mul(b *testing.B) {
 
 func Benchmark{:name}QuoRem(b *testing.B) {
 	for i := 0; i < b.N; i++ {
-		sink.{:name}, sink.{:name} = U{:bits}(uint64(i + 2)).QuoRem(U{:bits}(uint64(i + 1)))
+		sink.{:name}, sink.{:name} = U{:bits}From64(uint64(i + 2)).QuoRem(U{:bits}From64(uint64(i + 1)))
 	}
 }
 
 func Benchmark{:name}QuoRem64(b *testing.B) {
 	for i := 0; i < b.N; i++ {
-		sink.{:name}, sink.uint64 = U{:bits}(uint64(i + 2)).quoRem64(uint64(i + 1))
+		sink.{:name}, sink.uint64 = U{:bits}From64(uint64(i + 2)).quoRem64(uint64(i + 1))
 	}
 }
 `)

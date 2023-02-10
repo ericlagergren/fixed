@@ -17,9 +17,23 @@ type Uint128 struct {
 
 var _ Uint[Uint128] = Uint128{}
 
-// U128 returns x as a Uint128.
-func U128(x uint64) Uint128 {
-	return Uint128{x, 0}
+// U128 constructs a [Uint128].
+//
+// The inputs are in ascending (low to high) order. For example,
+// a uint64 x can be converted to a [Uint128], with
+//
+//	U128(x, 0, 0, ...)
+//
+// or more simply
+//
+//	U128From64(x)
+func U128(u0, u1 uint64) Uint128 {
+	return Uint128{u0, u1}
+}
+
+// U128From64 constructs a [Uint128] from a uint64.
+func U128From64(x uint64) Uint128 {
+	return Uint128{u0: x}
 }
 
 func (Uint128) max() Uint128 {
@@ -285,7 +299,7 @@ func (x Uint128) QuoRem(y Uint128) (q, r Uint128) {
 	if y.u1 == 0 {
 		// Fast path for a 64-bit y.
 		q, r64 := x.quoRem64(y.u0)
-		return q, U128(r64)
+		return q, U128From64(r64)
 	}
 
 	n := uint(bits.LeadingZeros64(y.u1))
@@ -296,7 +310,7 @@ func (x Uint128) QuoRem(y Uint128) (q, r Uint128) {
 	if tq != 0 {
 		tq--
 	}
-	q = U128(tq)
+	q = U128From64(tq)
 	ytq := y.mul64(tq) // ytq := y*tq
 	r = x.Sub(ytq)     // r = x-ytq
 	if r.Cmp(y) >= 0 {

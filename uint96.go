@@ -24,9 +24,23 @@ type Uint96 struct {
 
 var _ Uint[Uint96] = Uint96{}
 
-// U96 returns x as a Uint96.
-func U96(x uint64) Uint96 {
-	return Uint96{x, 0}
+// U96 constructs a [Uint96].
+//
+// The inputs are in ascending (low to high) order. For example,
+// a uint64 x can be converted to a [Uint96], with
+//
+//	U96(x, 0, 0, ...)
+//
+// or more simply
+//
+//	U96From64(x)
+func U96(u0 uint64, u1 uint32) Uint96 {
+	return Uint96{u0, u1}
+}
+
+// U96From64 constructs a [Uint96] from a uint64.
+func U96From64(x uint64) Uint96 {
+	return Uint96{u0: x}
 }
 
 func (Uint96) max() Uint96 {
@@ -319,7 +333,7 @@ func (x Uint96) QuoRem(y Uint96) (q, r Uint96) {
 	if y.u1 == 0 {
 		// Fast path for a 64-bit y.
 		q, r64 := x.quoRem64(y.u0)
-		return q, U96(r64)
+		return q, U96From64(r64)
 	}
 
 	// Perform 128-bit division as if the Uint96 is a Uint128
@@ -332,7 +346,7 @@ func (x Uint96) QuoRem(y Uint96) (q, r Uint96) {
 	if tq != 0 {
 		tq--
 	}
-	q = U96(tq)
+	q = U96From64(tq)
 	ytq := y.mul64(tq) // ytq := y*tq
 	r = x.Sub(ytq)     // r = x-ytq
 	if r.Cmp(y) >= 0 {

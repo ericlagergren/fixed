@@ -517,14 +517,14 @@ func TestUint2048Mul64(t *testing.T) {
 }
 
 func TestUint2048Exp(t *testing.T) {
-	x := U2048(1)
-	ten := U2048(10)
+	x := U2048From64(1)
+	ten := U2048From64(10)
 	for i := 1; ; i++ {
 		want, ok := x.mulCheck64(10)
 		if !ok {
 			break
 		}
-		got := ten.Exp(U2048(uint64(i)), U2048(0))
+		got := ten.Exp(U2048From64(uint64(i)), U2048From64(0))
 		if got != want {
 			t.Fatalf("#%d: expected %q, got %q", i, want, got)
 		}
@@ -537,7 +537,7 @@ func TestUint2048QuoRem(t *testing.T) {
 		x := randUint2048()
 		y := randUint2048()
 		if y.IsZero() {
-			y = U2048(1)
+			y = U2048From64(1)
 		}
 
 		q, r := x.QuoRem(y)
@@ -563,7 +563,7 @@ func TestUint2048QuoRemHalf(t *testing.T) {
 		x := randUint2048()
 		y := randUint1024()
 		if y.IsZero() {
-			y = U1024(1)
+			y = U1024From64(1)
 		}
 
 		q, r := x.quoRem1024(y)
@@ -688,12 +688,12 @@ func BenchmarkUint2048Mul(b *testing.B) {
 
 func BenchmarkUint2048QuoRem(b *testing.B) {
 	for i := 0; i < b.N; i++ {
-		sink.Uint2048, sink.Uint2048 = U2048(uint64(i + 2)).QuoRem(U2048(uint64(i + 1)))
+		sink.Uint2048, sink.Uint2048 = U2048From64(uint64(i + 2)).QuoRem(U2048From64(uint64(i + 1)))
 	}
 }
 
 func BenchmarkUint2048QuoRem64(b *testing.B) {
 	for i := 0; i < b.N; i++ {
-		sink.Uint2048, sink.uint64 = U2048(uint64(i + 2)).quoRem64(uint64(i + 1))
+		sink.Uint2048, sink.uint64 = U2048From64(uint64(i + 2)).quoRem64(uint64(i + 1))
 	}
 }

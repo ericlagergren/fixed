@@ -230,7 +230,7 @@ func TestUint128QuoRem(t *testing.T) {
 		x := randUint128()
 		y := randUint128()
 		if y == (Uint128{}) {
-			y = U128(1)
+			y = U128From64(1)
 		}
 
 		q, r := x.QuoRem(y)
@@ -334,6 +334,6 @@ func BenchmarkUint128Mul(b *testing.B) {
 
 func BenchmarkUint128QuoRem64(b *testing.B) {
 	for i := 0; i < b.N; i++ {
-		sink.Uint128, sink.uint64 = U128(uint64(i + 2)).quoRem64(uint64(i + 1))
+		sink.Uint128, sink.uint64 = U128From64(uint64(i + 2)).quoRem64(uint64(i + 1))
 	}
 }

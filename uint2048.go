@@ -19,8 +19,22 @@ type Uint2048 struct {
 
 var _ Uint[Uint2048] = Uint2048{}
 
-// U2048 returns x as a Uint2048.
-func U2048(x uint64) Uint2048 {
+// U2048 constructs a [Uint2048].
+//
+// The inputs are in ascending (low to high) order. For example,
+// a uint64 x can be converted to a [Uint2048], with
+//
+//	U2048(x, 0, 0, ...)
+//
+// or more simply
+//
+//	U2048From64(x)
+func U2048(u0, u1, u2, u3, u4, u5, u6, u7, u8, u9, u10, u11, u12, u13, u14, u15, u16, u17, u18, u19, u20, u21, u22, u23, u24, u25, u26, u27, u28, u29, u30, u31 uint64) Uint2048 {
+	return Uint2048{u0, u1, u2, u3, u4, u5, u6, u7, u8, u9, u10, u11, u12, u13, u14, u15, u16, u17, u18, u19, u20, u21, u22, u23, u24, u25, u26, u27, u28, u29, u30, u31}
+}
+
+// U2048From64 constructs a [Uint2048] from a uint64.
+func U2048From64(x uint64) Uint2048 {
 	return Uint2048{u0: x}
 }
 
@@ -3392,12 +3406,12 @@ func (x Uint2048) Exp(y, m Uint2048) Uint2048 {
 
 	// x^0 = 1
 	if y.IsZero() {
-		return U2048(1)
+		return U2048From64(1)
 	}
 
 	// x^1 mod m == x mod m
 	mod := !m.IsZero()
-	if y == U2048(1) && mod {
+	if y == U2048From64(1) && mod {
 		_, r := x.QuoRem(m)
 		return r
 	}
@@ -3454,7 +3468,7 @@ func (x Uint2048) mulPow10(n uint) (Uint2048, bool) {
 	case n == 0:
 		return x, true
 	default:
-		return x.MulCheck(U2048(10).Exp(U2048(uint64(n)), U2048(0)))
+		return x.MulCheck(U2048From64(10).Exp(U2048From64(uint64(n)), U2048From64(0)))
 	}
 }
 
@@ -3467,7 +3481,7 @@ func pow10Uint2048(n uint) Uint2048 {
 	pow10tabUint2048.once.Do(func() {
 		tab := make([]Uint2048, 2+617)
 		tab[0] = Uint2048{}
-		tab[1] = U2048(1)
+		tab[1] = U2048From64(1)
 		for i := 2; i < len(tab); i++ {
 			tab[i] = tab[i-1].mul64(10)
 		}

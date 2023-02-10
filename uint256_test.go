@@ -349,14 +349,14 @@ func TestUint256Mul64(t *testing.T) {
 }
 
 func TestUint256Exp(t *testing.T) {
-	x := U256(1)
-	ten := U256(10)
+	x := U256From64(1)
+	ten := U256From64(10)
 	for i := 1; ; i++ {
 		want, ok := x.mulCheck64(10)
 		if !ok {
 			break
 		}
-		got := ten.Exp(U256(uint64(i)), U256(0))
+		got := ten.Exp(U256From64(uint64(i)), U256From64(0))
 		if got != want {
 			t.Fatalf("#%d: expected %q, got %q", i, want, got)
 		}
@@ -369,7 +369,7 @@ func TestUint256QuoRem(t *testing.T) {
 		x := randUint256()
 		y := randUint256()
 		if y.IsZero() {
-			y = U256(1)
+			y = U256From64(1)
 		}
 
 		q, r := x.QuoRem(y)
@@ -395,7 +395,7 @@ func TestUint256QuoRemHalf(t *testing.T) {
 		x := randUint256()
 		y := randUint128()
 		if y.IsZero() {
-			y = U128(1)
+			y = U128From64(1)
 		}
 
 		q, r := x.quoRem128(y)
@@ -520,12 +520,12 @@ func BenchmarkUint256Mul(b *testing.B) {
 
 func BenchmarkUint256QuoRem(b *testing.B) {
 	for i := 0; i < b.N; i++ {
-		sink.Uint256, sink.Uint256 = U256(uint64(i + 2)).QuoRem(U256(uint64(i + 1)))
+		sink.Uint256, sink.Uint256 = U256From64(uint64(i + 2)).QuoRem(U256From64(uint64(i + 1)))
 	}
 }
 
 func BenchmarkUint256QuoRem64(b *testing.B) {
 	for i := 0; i < b.N; i++ {
-		sink.Uint256, sink.uint64 = U256(uint64(i + 2)).quoRem64(uint64(i + 1))
+		sink.Uint256, sink.uint64 = U256From64(uint64(i + 2)).quoRem64(uint64(i + 1))
 	}
 }

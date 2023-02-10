@@ -21,9 +21,23 @@ type Uint192 struct {
 
 var _ Uint[Uint192] = Uint192{}
 
-// U192 returns x as a Uint192.
-func U192(x uint64) Uint192 {
-	return Uint192{x, 0, 0}
+// U192 constructs a [Uint192].
+//
+// The inputs are in ascending (low to high) order. For example,
+// a uint64 x can be converted to a [Uint192], with
+//
+//	U192(x, 0, 0, ...)
+//
+// or more simply
+//
+//	U192From64(x)
+func U192(u0, u1, u2 uint64) Uint192 {
+	return Uint192{u0, u1, u2}
+}
+
+// U192From64 constructs a [Uint192] from a uint64.
+func U192From64(x uint64) Uint192 {
+	return Uint192{u0: x}
 }
 
 func (Uint192) max() Uint192 {
@@ -383,7 +397,7 @@ func (x Uint192) QuoRem(y Uint192) (q, r Uint192) {
 		if y.u1 == 0 {
 			// Fast path for a 64-bit y.
 			q, r64 := x.quoRem64(y.u0)
-			return q, U192(r64)
+			return q, U192From64(r64)
 		}
 		// Fast path for a 128-bit y.
 		q, r128 := x.quoRem128(y.low128())

@@ -19,8 +19,22 @@ type Uint256 struct {
 
 var _ Uint[Uint256] = Uint256{}
 
-// U256 returns x as a Uint256.
-func U256(x uint64) Uint256 {
+// U256 constructs a [Uint256].
+//
+// The inputs are in ascending (low to high) order. For example,
+// a uint64 x can be converted to a [Uint256], with
+//
+//	U256(x, 0, 0, ...)
+//
+// or more simply
+//
+//	U256From64(x)
+func U256(u0, u1, u2, u3 uint64) Uint256 {
+	return Uint256{u0, u1, u2, u3}
+}
+
+// U256From64 constructs a [Uint256] from a uint64.
+func U256From64(x uint64) Uint256 {
 	return Uint256{u0: x}
 }
 
@@ -408,12 +422,12 @@ func (x Uint256) Exp(y, m Uint256) Uint256 {
 
 	// x^0 = 1
 	if y.IsZero() {
-		return U256(1)
+		return U256From64(1)
 	}
 
 	// x^1 mod m == x mod m
 	mod := !m.IsZero()
-	if y == U256(1) && mod {
+	if y == U256From64(1) && mod {
 		_, r := x.QuoRem(m)
 		return r
 	}
@@ -485,7 +499,7 @@ func pow10Uint256(n uint) Uint256 {
 	pow10tabUint256.once.Do(func() {
 		tab := make([]Uint256, 2+78)
 		tab[0] = Uint256{}
-		tab[1] = U256(1)
+		tab[1] = U256From64(1)
 		for i := 2; i < len(tab); i++ {
 			tab[i] = tab[i-1].mul64(10)
 		}
